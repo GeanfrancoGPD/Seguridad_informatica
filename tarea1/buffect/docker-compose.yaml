@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  buffect_backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    networks:
+      - abogados_asociados
+
+  buffect_front:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    networks:
+      - abogados_asociados
+    depends_on:
+      - buffect_backend
+
+networks:
+  abogados_asociados:
+    external: true

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      async function enviar() {
+        const input = document.querySelector('input[type="file"]');
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch("http://localhost:3000/enviar", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: 1,
+            data: formData,
+          }),
+        });
+
+        const result = await response.json();
+        console.log(result);
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Buffect Frontend</h1>
+    <p>This is a placeholder for the frontend application.</p>
+    <input type="file" />
+    <button onclick="enviar()">subir</button>
+  </body>
+</html>
