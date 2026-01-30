@@ -10,5 +10,5 @@ app.listen(port, "0.0.0.0", () => {
 });
 
 app.post("/enviar", (req, res) => {
-  res.status(200).send("Archivo recibo");
+  res.send("Archivo recibo");
 });
