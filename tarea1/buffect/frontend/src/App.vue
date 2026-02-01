@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
+import EnviarDatos from "./components/EnviarDatos.vue";
 </script>
 
 <template>
   <div>
-    <h1>Vite + Vue</h1>
+    <h1>Suit:La ley de los audaces</h1>
   </div>
+
+  <EnviarDatos />
 </template>
 
 <style scoped>

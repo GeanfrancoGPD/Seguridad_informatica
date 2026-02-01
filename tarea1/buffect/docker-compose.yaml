@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   buffect_backend:
     build: ./backend
@@ -7,15 +5,19 @@ services:
       - "3000:3000"
     networks:
       - abogados_asociados
+    environment:
+      - Contenedor_tribunal=http://tribunales_back:3001
 
   buffect_front:
     build: ./frontend
     ports:
-      - "8080:80"
+      - "8080:5173"
     networks:
       - abogados_asociados
     depends_on:
       - buffect_backend
+    environment:
+      - VITE_API_URL=http://localhost:3000
 
 networks:
   abogados_asociados:
