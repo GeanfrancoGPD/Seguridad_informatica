@@ -60,6 +60,10 @@ export default class Cifrado {
       privateKey: privateKey.export({ type: "pkcs1", format: "pem" }),
     };
   }
+
+  compararHashes(hash1, hash2) {
+    return hash1 === hash2;
+  }
 }
 
 /* Se Logro muchachos se logrooooooo
