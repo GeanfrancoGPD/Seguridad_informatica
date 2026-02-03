@@ -1,0 +1,36 @@
+services:
+  tribunales_db:
+    image: postgres:15-alpine
+    container_name: tribunales_db
+    environment:
+      POSTGRES_USER: juez_admin
+      POSTGRES_PASSWORD: tribunal_password
+      POSTGRES_DB: sistema_tribunal
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - abogados_asociados
+
+  tribunales_back:
+    build: ./backend
+    container_name: tribunales_back
+    ports:
+      - "3001:3001"
+    depends_on:
+      - tribunales_db
+    networks:
+      - abogados_asociados
+
+  tribunales_front:
+    build: ./frontend
+    container_name: tribunales_front
+    ports:
+      - "8081:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3001
+    networks:
+      - abogados_asociados
+
+networks:
+  abogados_asociados:
+    external: true
