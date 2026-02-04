@@ -18,6 +18,12 @@ services:
       - "3001:3001"
     depends_on:
       - tribunales_db
+    environment:
+      - DB_USER=juez_admin
+      - DB_PASSWORD=tribunal_password
+      - DB_NAME=sistema_tribunal
+      - DB_HOST=tribunales_db
+      - DB_PORT=5432
     networks:
       - abogados_asociados
 
