@@ -10,6 +10,8 @@ services:
       - /home/app/node_modules
     networks:
       - abogados_asociados
+    environment:
+      - TRIBUNAL_URL=http://tribunales_back:3001
 
   buffect_front:
     build:

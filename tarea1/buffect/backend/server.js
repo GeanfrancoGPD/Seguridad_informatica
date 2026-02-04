@@ -1,6 +1,7 @@
 import app from "./utils/middleware.js";
 import validatePDF from "./utils/validateData.js";
 import Cifrado from "./utils/Cifrados.js";
+import dotenv from "dotenv";
 
 const port = process.env.PORT || 3000;
 
@@ -10,6 +11,7 @@ const port = process.env.PORT || 3000;
 app.listen(port, "0.0.0.0", () => {
   console.log(`Servidor ejecutandose en el puerto ${port}`);
 });
+console.log("url del servidor de back:", process.env.TRIBUNAL_URL);
 
 app.post("/enviar", async (req, res) => {
   try {
