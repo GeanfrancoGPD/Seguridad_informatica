@@ -21,7 +21,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - VITE_API_URL=http://buffect_backend:3000
+      - VITE_API_URL=http://localhost:3000
     depends_on:
       - buffect_backend
     networks:

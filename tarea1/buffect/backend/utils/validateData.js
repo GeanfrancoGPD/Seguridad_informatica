@@ -1,6 +1,6 @@
-const mime = require("mime-types");
+import mime from "mime-types";
 
-function validatePDF(filename) {
+export default function validatePDF(filename) {
   const mimeType = mime.lookup(filename);
   return mimeType === "application/pdf";
 }

@@ -4,7 +4,7 @@ import fs from "fs";
 export default class Cifrado {
   constructor() {}
 
-  cifrarSimetrico(datos) {
+  CifrarSimetrico(datos) {
     const clave = this.generarClaveSimetrica();
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv("aes-256-cbc", clave, iv);
@@ -19,7 +19,7 @@ export default class Cifrado {
     };
   }
 
-  descifrarSimetrico(encryptedData, clave, iv) {
+  DescifrarSimetrico(encryptedData, clave, iv) {
     const decipher = crypto.createDecipheriv("aes-256-cbc", clave, iv);
 
     let decrypted = Buffer.concat([
@@ -31,27 +31,27 @@ export default class Cifrado {
     return decrypted;
   }
 
-  generarClaveSimetrica() {
+  GenerarClaveSimetrica() {
     return crypto.randomBytes(32); // 256 bits para AES-256
   }
 
-  hashDatos(datos) {
+  HashDatos(datos) {
     return crypto.createHash("sha256").update(datos).digest("hex");
   }
 
-  cifradoAsimetrico(datos, publicKey) {
+  CifradoAsimetrico(datos, publicKey) {
     const buffer = Buffer.from(datos, "utf8");
     const encrypted = crypto.publicEncrypt(publicKey, buffer);
     return encrypted.toString("hex");
   }
 
-  descifrarAsimetrico(encryptedData, privateKey) {
+  DescifrarAsimetrico(encryptedData, privateKey) {
     const buffer = Buffer.from(encryptedData, "hex");
     const decrypted = crypto.privateDecrypt(privateKey, buffer);
     return decrypted.toString("utf8");
   }
 
-  generarClaveAsimetrica() {
+  GenerarClaveAsimetrica() {
     const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
       modulusLength: 2048,
     });

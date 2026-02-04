@@ -1,11 +1,14 @@
 services:
   tribunales_db:
     image: postgres:17
+    restart: always
     container_name: tribunales_db
     environment:
       POSTGRES_USER: harvey
       POSTGRES_PASSWORD: specter
       POSTGRES_DB: sistema_tribunal
+      PGDATA: /var/lib/postgresql/data/pgdata
+
     volumes:
       - ./db_data:/var/lib/postgresql/data
     ports:
@@ -29,6 +32,8 @@ services:
       - "8082:8080"
     volumes:
       - ./servers.json:/pgadmin4/servers.json
+    networks:
+      - abogados_asociados
 
   tribunales_back:
     build: ./backend
