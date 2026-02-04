@@ -8,43 +8,22 @@ services:
       POSTGRES_PASSWORD: specter
       POSTGRES_DB: sistema_tribunal
       PGDATA: /var/lib/postgresql/data/pgdata
-
     volumes:
+      - ./tarea1/tribunales/database/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./db_data:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
-    networks:
-      - abogados_asociados
-
-  pgadmin:
-    image: elestio/pgadmin:latest
-    container_name: pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: harvey@specter.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_LISTEN_PORT: 8080
-
-    depends_on:
-      - tribunales_db
-
-    ports:
-      - "8082:8080"
-    volumes:
-      - ./servers.json:/pgadmin4/servers.json
     networks:
       - abogados_asociados
 
   tribunales_back:
-    build: ./backend
+    build: ./tarea1/tribunales/backend
     container_name: tribunales_back
     ports:
       - "3001:3001"
     depends_on:
       - tribunales_db
     environment:
-      - DB_USER=juez_admin
-      - DB_PASSWORD=tribunal_password
+      - DB_USER=harvey
+      - DB_PASSWORD=specter
       - DB_NAME=sistema_tribunal
       - DB_HOST=tribunales_db
       - DB_PORT=5432
@@ -52,7 +31,7 @@ services:
       - abogados_asociados
 
   tribunales_front:
-    build: ./frontend
+    build: ./tarea1/tribunales/frontend
     container_name: tribunales_front
     ports:
       - "8081:5173"
@@ -60,6 +39,28 @@ services:
       - VITE_API_URL=http://localhost:3001
     networks:
       - abogados_asociados
+
+  buffect_backend:
+    build: ./tarea1/buffect/backend
+    container_name: buffect_backend
+    ports:
+      - "3000:3000"
+    networks:
+      - abogados_asociados
+    environment:
+      - Contenedor_tribunal=http://tribunales_back:3001
+
+  buffect_front:
+    build: ./tarea1/buffect/frontend
+    container_name: buffect_front
+    ports:
+      - "8080:5173"
+    networks:
+      - abogados_asociados
+    depends_on:
+      - buffect_backend
+    environment:
+      - VITE_API_URL=http://localhost:3000
 
 networks:
   abogados_asociados:
