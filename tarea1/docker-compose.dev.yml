@@ -1,0 +1,100 @@
+version: "3.9"
+
+services:
+  tribunales_db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: harvey
+      POSTGRES_PASSWORD: specter
+      POSTGRES_DB: sistema_tribunal
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./tarea1/tribunales/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db_data:/var/lib/postgresql/data
+    networks:
+      - abogados_asociados
+
+  pgadmin:
+    image: elestio/pgadmin:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: harvey@specter.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+    networks:
+      - abogados_asociados
+
+  tribunales_back:
+    build:
+      context: ./tribunales/backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./tribunales/backend:/home/app
+      - /home/app/node_modules
+    environment:
+      DB_USER: harvey
+      DB_PASSWORD: specter
+      DB_NAME: sistema_tribunal
+      DB_HOST: tribunales_db
+      DB_PORT: 5432
+      URL_DB: ./database/init.sql
+    depends_on:
+      - tribunales_db
+    networks:
+      - abogados_asociados
+
+  tribunales_front:
+    build:
+      context: ./tribunales/frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8081:5173"
+    volumes:
+      - ./tribunales/frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://tribunales_back:3001
+    depends_on:
+      - tribunales_back
+    networks:
+      - abogados_asociados
+
+  buffect_backend:
+    build:
+      context: ./buffect/backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./buffect/backend:/home/app
+      - /home/app/node_modules
+    environment:
+      - TRIBUNAL_URL=http://tribunales_back:3001
+    networks:
+      - abogados_asociados
+
+  buffect_front:
+    build:
+      context: ./buffect/frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:5173"
+    volumes:
+      - ./buffect/frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL= http://localhost:3000
+    depends_on:
+      - buffect_backend
+    networks:
+      - abogados_asociados
+
+networks:
+  abogados_asociados:
+    external: true

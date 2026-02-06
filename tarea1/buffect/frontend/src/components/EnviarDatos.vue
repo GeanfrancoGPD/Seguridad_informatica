@@ -18,28 +18,31 @@ function enviar() {
   }
 
   const formData = new FormData();
-  formData.append("data", file); // "data" es el nombre del campo
+  formData.append("data", file);
 
   fetch(import.meta.env.VITE_API_URL + "/enviar", {
     method: "POST",
     body: formData,
   })
-    .then((response) => {
-      if (response.ok) {
-        console.log("Archivo enviado con éxito.");
-      } else {
-        console.error("Error al enviar el archivo.");
-      }
+    .then(async (res) => {
+      const msg = await res.text();
+      if (!res.ok) throw new Error(msg);
+      console.log("Éxito:", msg);
     })
-    .catch((error) => {
-      console.error("Error de red:", error);
+    .catch((err) => {
+      console.error("Error:", err.message);
     });
 }
 </script>
 
 <template>
   <div class="Datos">
-    <input type="file" placeholder="Sube el archivos" id="document" />
+    <input
+      type="file"
+      placeholder="Sube el archivos"
+      id="document"
+      accept="application/pdf"
+    />
     <button v-on:click="enviar()">Enviar Datos</button>
   </div>
 </template>

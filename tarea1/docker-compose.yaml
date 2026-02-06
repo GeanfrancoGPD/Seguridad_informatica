@@ -14,8 +14,21 @@ services:
     networks:
       - abogados_asociados
 
+  pgadmin:
+    image: elestio/pgadmin:latest
+    restart: always
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: harvey@specter.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 8080
+    ports:
+      - "172.17.0.1:8080:8080"
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+
   tribunales_back:
-    build: ./tarea1/tribunales/backend
+    build: ./tribunales/backend
     container_name: tribunales_back
     ports:
       - "3001:3001"
@@ -31,7 +44,7 @@ services:
       - abogados_asociados
 
   tribunales_front:
-    build: ./tarea1/tribunales/frontend
+    build: ./tribunales/frontend
     container_name: tribunales_front
     ports:
       - "8081:5173"
@@ -41,7 +54,7 @@ services:
       - abogados_asociados
 
   buffect_backend:
-    build: ./tarea1/buffect/backend
+    build: ./buffect/backend
     container_name: buffect_backend
     ports:
       - "3000:3000"
@@ -51,7 +64,7 @@ services:
       - Contenedor_tribunal=http://tribunales_back:3001
 
   buffect_front:
-    build: ./tarea1/buffect/frontend
+    build: ./buffect/frontend
     container_name: buffect_front
     ports:
       - "8080:5173"
@@ -60,7 +73,7 @@ services:
     depends_on:
       - buffect_backend
     environment:
-      - VITE_API_URL=http://localhost:3000
+      - VITE_API_URL= http://localhost:3000
 
 networks:
   abogados_asociados:

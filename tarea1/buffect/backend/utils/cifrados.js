@@ -5,12 +5,11 @@ export default class Cifrado {
   constructor() {}
 
   CifrarSimetrico(datos) {
-    const clave = this.generarClaveSimetrica();
+    const clave = this.GenerarClaveSimetrica();
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv("aes-256-cbc", clave, iv);
-    const pdfBuffer = fs.readFileSync(datos);
 
-    const encrypted = Buffer.concat([cipher.update(pdfBuffer), cipher.final()]);
+    const encrypted = Buffer.concat([cipher.update(datos), cipher.final()]);
     // fs.writeFileSync("archivo.pdf.enc", encrypted); // Guardar el archivo cifrado si es necesario
     return {
       iv: iv,
@@ -41,13 +40,27 @@ export default class Cifrado {
 
   CifradoAsimetrico(datos, publicKey) {
     const buffer = Buffer.from(datos, "utf8");
-    const encrypted = crypto.publicEncrypt(publicKey, buffer);
+    const encrypted = crypto.publicEncrypt(
+      {
+        key: publicKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256",
+      },
+      buffer
+    );
     return encrypted.toString("hex");
   }
 
   DescifrarAsimetrico(encryptedData, privateKey) {
     const buffer = Buffer.from(encryptedData, "hex");
-    const decrypted = crypto.privateDecrypt(privateKey, buffer);
+    const decrypted = crypto.privateDecrypt(
+      {
+        key: privateKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256",
+      },
+      buffer
+    );
     return decrypted.toString("utf8");
   }
 
@@ -56,8 +69,8 @@ export default class Cifrado {
       modulusLength: 2048,
     });
     return {
-      publicKey: publicKey.export({ type: "pkcs1", format: "pem" }),
-      privateKey: privateKey.export({ type: "pkcs1", format: "pem" }),
+      publicKey: publicKey.export({ type: "spki", format: "pem" }),
+      privateKey: privateKey.export({ type: "pkcs8", format: "pem" }),
     };
   }
 }

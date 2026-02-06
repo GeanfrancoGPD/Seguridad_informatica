@@ -1,59 +1,55 @@
-import appBase from "./utils/middleware.js";
-import pkg from 'pg';
-const { Pool } = pkg;
+import app from "./utils/middleware.js";
 import Cifrado from "./utils/cifrados.js";
-import crypto from "crypto";
+import db from "./utils/db.js";
 
-const app = appBase;
 const cifrador = new Cifrado();
-
-// Configuración mediante Variables de Entorno
-const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT || 5432,
-});
 
 // 1. GENERAR TOKEN (Clave Pública)
 app.get("/code", async (req, res) => {
   try {
-    const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
-      modulusLength: 2048,
-      publicKeyEncoding: { type: "pkcs1", format: "pem" },
-      privateKeyEncoding: { type: "pkcs1", format: "pem" },
-    });
+    const { publicKey, privateKey } = cifrador.GenerarClaveAsimetrica();
 
-    await pool.query("INSERT INTO clave (publica, privada) VALUES ($1, $2)", [publicKey, privateKey]);
+    await db.guardarClave(publicKey, privateKey);
+    console.log("Clave guardada en la base de datos", publicKey);
+
     res.send(publicKey);
   } catch (err) {
-    res.status(500).send("Error al generar permiso");
+    res.status(500).send("Error al generar permiso. Errror: " + err.message);
   }
 });
 
 // 2. RECIBIR Y VALIDAR
 app.post("/recibir", async (req, res) => {
-  const { pdf_cifrado, hash_bufete, clave_sim_enc, iv, publica_enviada } = req.body;
+  const { pdf_cifrado, hash_bufete, clave_sim_enc, iv, publica_enviada } =
+    req.body;
 
   try {
-    const resClave = await pool.query("SELECT privada FROM clave WHERE publica = $1", [publica_enviada]);
-    if (resClave.rows.length === 0) return res.status(401).send("Token no válido");
-    
+    const resClave = await pool.query(
+      "SELECT privada FROM clave WHERE publica = $1",
+      [publica_enviada]
+    );
+    if (resClave.rows.length === 0)
+      return res.status(401).send("Token no válido");
+
     const privadaTribunal = resClave.rows[0].privada;
 
-    const claveSimetricaHex = cifrador.descifrarAsimetrico(clave_sim_enc, privadaTribunal);
+    const claveSimetricaHex = cifrador.descifrarAsimetrico(
+      clave_sim_enc,
+      privadaTribunal
+    );
     const pdfPlano = cifrador.descifrarSimetrico(
-      Buffer.from(pdf_cifrado, 'base64'),
-      Buffer.from(claveSimetricaHex, 'hex'),
-      Buffer.from(iv, 'hex')
+      Buffer.from(pdf_cifrado, "base64"),
+      Buffer.from(claveSimetricaHex, "hex"),
+      Buffer.from(iv, "hex")
     );
 
     const hashCalculado = cifrador.hashDatos(pdfPlano);
 
     // Validación de Integridad
     if (hashCalculado !== hash_bufete) {
-      return res.status(400).send("ERROR: Hashes diferentes, integridad comprometida");
+      return res
+        .status(400)
+        .send("ERROR: Hashes diferentes, integridad comprometida");
     }
 
     // Guardado con Llave Foránea
@@ -68,4 +64,6 @@ app.post("/recibir", async (req, res) => {
   }
 });
 
-app.listen(3001, "0.0.0.0", () => console.log("Tribunal activo en puerto 3001"));
+app.listen(3001, "0.0.0.0", () =>
+  console.log("Tribunal activo en puerto 3001")
+);

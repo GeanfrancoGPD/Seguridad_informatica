@@ -4,13 +4,12 @@ import fs from "fs";
 export default class Cifrado {
   constructor() {}
 
-  cifrarSimetrico(datos) {
-    const clave = this.generarClaveSimetrica();
+  CifrarSimetrico(datos) {
+    const clave = this.GenerarClaveSimetrica();
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv("aes-256-cbc", clave, iv);
-    const pdfBuffer = fs.readFileSync(datos);
 
-    const encrypted = Buffer.concat([cipher.update(pdfBuffer), cipher.final()]);
+    const encrypted = Buffer.concat([cipher.update(datos), cipher.final()]);
     // fs.writeFileSync("archivo.pdf.enc", encrypted); // Guardar el archivo cifrado si es necesario
     return {
       iv: iv,
@@ -19,7 +18,7 @@ export default class Cifrado {
     };
   }
 
-  descifrarSimetrico(encryptedData, clave, iv) {
+  DescifrarSimetrico(encryptedData, clave, iv) {
     const decipher = crypto.createDecipheriv("aes-256-cbc", clave, iv);
 
     let decrypted = Buffer.concat([
@@ -31,38 +30,48 @@ export default class Cifrado {
     return decrypted;
   }
 
-  generarClaveSimetrica() {
+  GenerarClaveSimetrica() {
     return crypto.randomBytes(32); // 256 bits para AES-256
   }
 
-  hashDatos(datos) {
+  HashDatos(datos) {
     return crypto.createHash("sha256").update(datos).digest("hex");
   }
 
-  cifradoAsimetrico(datos, publicKey) {
+  CifradoAsimetrico(datos, publicKey) {
     const buffer = Buffer.from(datos, "utf8");
-    const encrypted = crypto.publicEncrypt(publicKey, buffer);
+    const encrypted = crypto.publicEncrypt(
+      {
+        key: publicKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256",
+      },
+      buffer
+    );
     return encrypted.toString("hex");
   }
 
-  descifrarAsimetrico(encryptedData, privateKey) {
+  DescifrarAsimetrico(encryptedData, privateKey) {
     const buffer = Buffer.from(encryptedData, "hex");
-    const decrypted = crypto.privateDecrypt(privateKey, buffer);
+    const decrypted = crypto.privateDecrypt(
+      {
+        key: privateKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256",
+      },
+      buffer
+    );
     return decrypted.toString("utf8");
   }
 
-  generarClaveAsimetrica() {
+  GenerarClaveAsimetrica() {
     const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
       modulusLength: 2048,
     });
     return {
-      publicKey: publicKey.export({ type: "pkcs1", format: "pem" }),
-      privateKey: privateKey.export({ type: "pkcs1", format: "pem" }),
+      publicKey: publicKey.export({ type: "spki", format: "pem" }),
+      privateKey: privateKey.export({ type: "pkcs8", format: "pem" }),
     };
-  }
-
-  compararHashes(hash1, hash2) {
-    return hash1 === hash2;
   }
 }
 

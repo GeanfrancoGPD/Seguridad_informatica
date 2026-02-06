@@ -1,7 +1,17 @@
 import app from "./utils/middleware.js";
-import validatePDF from "./utils/validateData.js";
 import Cifrado from "./utils/Cifrados.js";
-import dotenv from "dotenv";
+import multer from "multer";
+
+const upload = multer({
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype !== "application/pdf") {
+      cb(new Error("Solo se permiten PDFs"));
+    } else {
+      cb(null, true);
+    }
+  },
+});
 
 const port = process.env.PORT || 3000;
 
@@ -13,7 +23,7 @@ app.listen(port, "0.0.0.0", () => {
 });
 console.log("url del servidor de back:", process.env.TRIBUNAL_URL);
 
-app.post("/enviar", async (req, res) => {
+app.post("/enviar", upload.single("data"), async (req, res) => {
   try {
     // 1. Pedir clave pública al tribunal
     const response = await fetch(process.env.TRIBUNAL_URL + "/code");
@@ -23,17 +33,16 @@ app.post("/enviar", async (req, res) => {
       return res.status(400).send("Error al recibir confirmación del tribunal");
     }
 
-    // 2. Validar body
-    if (!req.body || !req.body.data) {
+    if (!req.file) {
       return res.status(400).send("Error al recibir datos del cliente");
     }
 
-    if (!validatePDF(req.body.data)) {
+    if (req.file.mimetype !== "application/pdf") {
       return res.status(400).send("El archivo no es un PDF válido");
     }
 
     // 3. Procesar PDF
-    const pdfData = req.body.data;
+    const pdfData = req.file.buffer;
     const cifrados = new Cifrado();
 
     // Hash
@@ -43,6 +52,8 @@ app.post("/enviar", async (req, res) => {
     const cifradoSimetrico = cifrados.CifrarSimetrico(pdfData);
 
     // Cifrado asimétrico (con la CLAVE PÚBLICA)
+    console.log("llave publica:", llave_publica);
+
     const claveSimetricaCifrada = cifrados.CifradoAsimetrico(
       cifradoSimetrico.clave.toString("hex"),
       llave_publica
