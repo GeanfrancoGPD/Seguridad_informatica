@@ -10,7 +10,7 @@ app.get("/code", async (req, res) => {
     const { publicKey, privateKey } = cifrador.GenerarClaveAsimetrica();
 
     await db.guardarClave(publicKey, privateKey);
-    console.log("Clave guardada en la base de datos", publicKey);
+    //console.log("Clave guardada en la base de datos", publicKey);
 
     res.send(publicKey);
   } catch (err) {
@@ -18,7 +18,6 @@ app.get("/code", async (req, res) => {
   }
 });
 
-// 2. RECIBIR Y VALIDAR
 app.post("/recibir", async (req, res) => {
   const { pdf_cifrado, hash_bufete, clave_sim_enc, iv, publica_enviada } =
     req.body;

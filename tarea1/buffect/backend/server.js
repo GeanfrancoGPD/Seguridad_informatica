@@ -51,22 +51,30 @@ app.post("/enviar", upload.single("data"), async (req, res) => {
     // Cifrado simétrico
     const cifradoSimetrico = cifrados.CifrarSimetrico(pdfData);
 
-    // Cifrado asimétrico (con la CLAVE PÚBLICA)
-    console.log("llave publica:", llave_publica);
+    //console.log("llave publica:", llave_publica);
 
     const claveSimetricaCifrada = cifrados.CifradoAsimetrico(
       cifradoSimetrico.clave.toString("hex"),
       llave_publica
     );
 
+    fetch(process.env.TRIBUNAL_URL + "/recibir", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        hash_bufete: hashPDF,
+        pdf_cifrado: cifradoSimetrico.encryptedData.toString("base64"),
+        iv: cifradoSimetrico.iv.toString("hex"),
+        clave_sim_enc: claveSimetricaCifrada,
+        publica_enviada: llave_publica,
+      }),
+    });
+
     // 4. Responder
     res.status(200).json({
       mensaje: "Archivo procesado correctamente",
-      hash_bufete: hashPDF,
-      pdf_cifrado: cifradoSimetrico.encryptedData.toString("base64"),
-      iv: cifradoSimetrico.iv.toString("hex"),
-      clave_sim_enc: claveSimetricaCifrada,
-      publica_enviada: llave_publica,
     });
   } catch (error) {
     console.error(error);
