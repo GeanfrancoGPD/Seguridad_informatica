@@ -1,8 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ListaPDFs from "./components/ListaPDFs.vue";
+</script>
 
 <template>
   <div>
     <h1>Suit:La ley de los audaces</h1>
+    <ListaPDFs />
   </div>
 </template>
 

@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS almacen (
     id SERIAL PRIMARY KEY,
     pdf_documento BYTEA NOT NULL,
     hash_archivo TEXT NOT NULL,
+    clave_sim_enc TEXT NOT NULL,
+    iv TEXT NOT NULL,
     clave_publica_asociada TEXT NOT NULL,
     fecha_ingreso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_token_tribunal

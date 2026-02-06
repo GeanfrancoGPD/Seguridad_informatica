@@ -1,5 +1,5 @@
 import app from "./utils/middleware.js";
-import Cifrado from "./utils/Cifrados.js";
+import Cifrado from "./utils/cifrados.js";
 import multer from "multer";
 
 const upload = multer({

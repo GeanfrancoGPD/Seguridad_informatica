@@ -70,7 +70,13 @@ app.post("/recibir", async (req, res) => {
     }
 
     // Guardado con Llave Foránea
-    await db.setAlmacen(pdfPlano, hashCalculado, publica_enviada);
+    await db.setAlmacen(
+      pdf_cifrado,
+      clave_sim_enc,
+      iv,
+      hashCalculado,
+      publica_enviada
+    );
 
     res.status(200).send("Documento verificado y almacenado");
   } catch (error) {
@@ -85,16 +91,140 @@ app.listen(3001, "0.0.0.0", () =>
 
 app.get("/datos", async (req, res) => {
   try {
-    const datos = await db.getAlmacen();
-    res.json({
-      ok: true,
-      total: datos.length,
-      datos: datos,
-    });
+    const mapa = await db.getAlmacen();
+    const resultados = [];
+
+    for (const [id, registro] of mapa.entries()) {
+      resultados.push({
+        id,
+        hash_archivo: registro.hash,
+        fecha_ingreso: registro.fecha,
+        clave_publica_asociada: registro.publica,
+      });
+    }
+
+    res.json(resultados);
   } catch (error) {
     res.status(500).json({
       ok: false,
       mensaje: "Error al obtener datos",
+      error: error.message,
     });
+  }
+});
+
+app.get("/datos", async (req, res) => {
+  try {
+    const mapa = await db.getAlmacen();
+    const resultados = [];
+
+    for (const [id, registro] of mapa.entries()) {
+      resultados.push({
+        id,
+        hash_archivo: registro.hash,
+        fecha_ingreso: registro.fecha,
+        clave_publica_asociada: registro.publica,
+      });
+    }
+
+    res.json(resultados);
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error al obtener datos",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/datos", async (req, res) => {
+  try {
+    const mapa = await db.getAlmacen();
+    const resultados = [];
+
+    for (const [id, registro] of mapa.entries()) {
+      resultados.push({
+        id,
+        hash_archivo: registro.hash,
+        fecha_ingreso: registro.fecha,
+        clave_publica_asociada: registro.publica,
+      });
+    }
+
+    res.json(resultados);
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error al obtener datos",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/almacen/:id/ver", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const mapa = await db.getAlmacen();
+    const registro = mapa.get(Number(id));
+
+    if (!registro) {
+      return res.status(404).send("PDF no encontrado");
+    }
+
+    const { pdf_cifrado, clave_sim_enc, iv, privada } = registro;
+
+    // Descifrado
+    const claveSimHex = cifrador.DescifrarAsimetrico(clave_sim_enc, privada);
+    const pdfPlano = cifrador.DescifrarSimetrico(
+      Buffer.from(pdf_cifrado, "base64"),
+      Buffer.from(claveSimHex, "hex"),
+      Buffer.from(iv, "hex")
+    );
+
+    // Configurar headers para que el navegador lo muestre
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="documento_${id}.pdf"`
+    );
+
+    res.send(pdfPlano);
+  } catch (error) {
+    console.error("Error al ver PDF:", error);
+    res.status(500).send("Error al mostrar PDF");
+  }
+});
+
+app.get("/almacen/:id/descargar", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const mapa = await db.getAlmacen();
+    const registro = mapa.get(Number(id));
+
+    if (!registro) {
+      return res.status(404).send("PDF no encontrado");
+    }
+
+    const { pdf_cifrado, clave_sim_enc, iv, privada } = registro;
+
+    // Descifrado
+    const claveSimHex = cifrador.DescifrarAsimetrico(clave_sim_enc, privada);
+    const pdfPlano = cifrador.DescifrarSimetrico(
+      Buffer.from(pdf_cifrado, "base64"),
+      Buffer.from(claveSimHex, "hex"),
+      Buffer.from(iv, "hex")
+    );
+
+    // Configurar headers para descarga
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="documento_${id}.pdf"`
+    );
+
+    res.send(pdfPlano);
+  } catch (error) {
+    console.error("Error al descargar PDF:", error);
+    res.status(500).send("Error al descargar PDF");
   }
 });

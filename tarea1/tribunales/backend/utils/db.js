@@ -80,24 +80,50 @@ class DB {
     }
   }
 
-  async setAlmacen(pdfPlano, hashCalculado, publica_enviada) {
-    try {
-      await pool.query(
-        "INSERT INTO almacen (pdf_documento, hash_archivo, clave_publica_asociada) VALUES ($1, $2, $3)",
-        [pdfPlano, hashCalculado, publica_enviada]
-      );
-    } catch (error) {
-      console.error("Error al guardar en almacen:", error);
-    }
+  async setAlmacen(pdf_cifrado, clave_sim_enc, iv, hash, publica) {
+    await pool.query(
+      `INSERT INTO almacen 
+      (pdf_documento, hash_archivo, clave_sim_enc, iv, clave_publica_asociada)
+      VALUES ($1, $2, $3, $4, $5)`,
+      [Buffer.from(pdf_cifrado, "base64"), hash, clave_sim_enc, iv, publica]
+    );
   }
 
   async getAlmacen() {
     try {
-      const res = await pool.query("SELECT * FROM almacen");
-      return res.rows;
+      const query = `
+      SELECT 
+        a.id,
+        a.pdf_documento,
+        a.hash_archivo,
+        a.clave_sim_enc,
+        a.iv,
+        a.fecha_ingreso,
+        c.privada
+      FROM almacen a
+      INNER JOIN clave c
+        ON a.clave_publica_asociada = c.publica
+    `;
+
+      const res = await pool.query(query);
+
+      const mapa = new Map();
+
+      res.rows.forEach((row) => {
+        mapa.set(row.id, {
+          privada: row.privada,
+          pdf_cifrado: row.pdf_documento,
+          clave_sim_enc: row.clave_sim_enc,
+          iv: row.iv,
+          hash: row.hash_archivo,
+          fecha: row.fecha_ingreso,
+        });
+      });
+
+      return mapa;
     } catch (error) {
-      console.error("Error al obtener almacen:", error);
-      return [];
+      console.error("Error al obtener almacen con join:", error);
+      return new Map();
     }
   }
 }

@@ -4,7 +4,7 @@ import { ref, onMounted } from "vue";
 const pdfs = ref<any[]>([]);
 
 async function cargarPDFs() {
-  const res = await fetch(import.meta.env.VITE_API_URL + "/almacen");
+  const res = await fetch(import.meta.env.VITE_API_URL + "/datos");
   pdfs.value = await res.json();
 }
 
@@ -29,7 +29,6 @@ onMounted(cargarPDFs);
         <tr>
           <th>ID</th>
           <th>Hash</th>
-          <th>Clave pública</th>
           <th>Fecha</th>
           <th>Acciones</th>
         </tr>
@@ -39,7 +38,6 @@ onMounted(cargarPDFs);
         <tr v-for="pdf in pdfs" :key="pdf.id">
           <td>{{ pdf.id }}</td>
           <td class="hash">{{ pdf.hash_archivo }}</td>
-          <td class="hash">{{ pdf.clave_publica_asociada }}</td>
           <td>{{ new Date(pdf.fecha_ingreso).toLocaleString() }}</td>
           <td>
             <button @click="verPDF(pdf.id)">👁 Ver</button>
@@ -70,7 +68,7 @@ td {
 }
 
 th {
-  background-color: #f3f3f3;
+  background-color: #ff0000;
 }
 
 .hash {
