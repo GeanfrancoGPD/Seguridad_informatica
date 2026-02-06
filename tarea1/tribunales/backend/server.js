@@ -6,6 +6,15 @@ const cifrador = new Cifrado();
 
 // 1. GENERAR TOKEN (Clave Pública)
 app.get("/code", async (req, res) => {
+  console.log(
+    "datos de la base de datos:",
+    process.env.DB_USER,
+    "",
+    process.env.DB_HOST,
+    process.env.DB_NAME,
+    process.env.DB_PASSWORD,
+    process.env.DB_PORT
+  );
   try {
     const { publicKey, privateKey } = cifrador.GenerarClaveAsimetrica();
 
@@ -22,27 +31,36 @@ app.post("/recibir", async (req, res) => {
   const { pdf_cifrado, hash_bufete, clave_sim_enc, iv, publica_enviada } =
     req.body;
 
+  if (
+    !pdf_cifrado ||
+    !hash_bufete ||
+    !clave_sim_enc ||
+    !iv ||
+    !publica_enviada
+  ) {
+    return res.status(400).send("Faltan datos en la solicitud");
+  }
+
   try {
-    const resClave = await pool.query(
-      "SELECT privada FROM clave WHERE publica = $1",
-      [publica_enviada]
-    );
+    const resClave = await db.getClave(publica_enviada);
+    console.log("respuesta de privada:", resClave);
+
     if (resClave.rows.length === 0)
       return res.status(401).send("Token no válido");
 
     const privadaTribunal = resClave.rows[0].privada;
 
-    const claveSimetricaHex = cifrador.descifrarAsimetrico(
+    const claveSimetricaHex = cifrador.DescifrarAsimetrico(
       clave_sim_enc,
       privadaTribunal
     );
-    const pdfPlano = cifrador.descifrarSimetrico(
+    const pdfPlano = cifrador.DescifrarSimetrico(
       Buffer.from(pdf_cifrado, "base64"),
       Buffer.from(claveSimetricaHex, "hex"),
       Buffer.from(iv, "hex")
     );
 
-    const hashCalculado = cifrador.hashDatos(pdfPlano);
+    const hashCalculado = cifrador.HashDatos(pdfPlano);
 
     // Validación de Integridad
     if (hashCalculado !== hash_bufete) {
@@ -52,17 +70,31 @@ app.post("/recibir", async (req, res) => {
     }
 
     // Guardado con Llave Foránea
-    await pool.query(
-      "INSERT INTO almacen (pdf_documento, hash_archivo, clave_publica_asociada) VALUES ($1, $2, $3)",
-      [pdfPlano, hashCalculado, publica_enviada]
-    );
+    await db.setAlmacen(pdfPlano, hashCalculado, publica_enviada);
 
     res.status(200).send("Documento verificado y almacenado");
   } catch (error) {
-    res.status(500).send("Error interno de procesamiento");
+    console.error("ERROR EN /recibir:", error);
+    res.status(500).send(error.message);
   }
 });
 
 app.listen(3001, "0.0.0.0", () =>
   console.log("Tribunal activo en puerto 3001")
 );
+
+app.get("/datos", async (req, res) => {
+  try {
+    const datos = await db.getAlmacen();
+    res.json({
+      ok: true,
+      total: datos.length,
+      datos: datos,
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      mensaje: "Error al obtener datos",
+    });
+  }
+});

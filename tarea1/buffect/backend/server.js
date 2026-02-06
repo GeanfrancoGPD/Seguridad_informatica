@@ -58,19 +58,29 @@ app.post("/enviar", upload.single("data"), async (req, res) => {
       llave_publica
     );
 
-    fetch(process.env.TRIBUNAL_URL + "/recibir", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        hash_bufete: hashPDF,
-        pdf_cifrado: cifradoSimetrico.encryptedData.toString("base64"),
-        iv: cifradoSimetrico.iv.toString("hex"),
-        clave_sim_enc: claveSimetricaCifrada,
-        publica_enviada: llave_publica,
-      }),
-    });
+    const tribunalResponse = await fetch(
+      process.env.TRIBUNAL_URL + "/recibir",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          hash_bufete: hashPDF,
+          pdf_cifrado: cifradoSimetrico.encryptedData.toString("base64"),
+          iv: cifradoSimetrico.iv.toString("hex"),
+          clave_sim_enc: claveSimetricaCifrada,
+          publica_enviada: llave_publica,
+        }),
+      }
+    );
+
+    const texto = await tribunalResponse.text();
+    console.log("Respuesta tribunal:", texto);
+
+    if (!tribunalResponse.ok) {
+      return res.status(500).send("El tribunal rechazó el documento");
+    }
 
     // 4. Responder
     res.status(200).json({

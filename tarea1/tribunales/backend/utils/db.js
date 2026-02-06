@@ -66,6 +66,40 @@ class DB {
       return [];
     }
   }
+
+  async getClave(publica) {
+    try {
+      const res = await pool.query(
+        "SELECT privada FROM clave WHERE publica = $1",
+        [publica]
+      );
+      return res;
+    } catch (error) {
+      console.error("Error al obtener clave privada:", error);
+      return null;
+    }
+  }
+
+  async setAlmacen(pdfPlano, hashCalculado, publica_enviada) {
+    try {
+      await pool.query(
+        "INSERT INTO almacen (pdf_documento, hash_archivo, clave_publica_asociada) VALUES ($1, $2, $3)",
+        [pdfPlano, hashCalculado, publica_enviada]
+      );
+    } catch (error) {
+      console.error("Error al guardar en almacen:", error);
+    }
+  }
+
+  async getAlmacen() {
+    try {
+      const res = await pool.query("SELECT * FROM almacen");
+      return res.rows;
+    } catch (error) {
+      console.error("Error al obtener almacen:", error);
+      return [];
+    }
+  }
 }
 
 export default new DB();
