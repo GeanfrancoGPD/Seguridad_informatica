@@ -62,7 +62,7 @@ services:
       - ./tribunales/frontend:/app
       - /app/node_modules
     environment:
-      - VITE_API_URL=http://tribunales_back:3001
+      - VITE_API_URL=http://localhost:3001
     depends_on:
       - tribunales_back
     networks:

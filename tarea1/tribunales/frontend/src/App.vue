@@ -1,13 +1,9 @@
-<script setup lang="ts">
-import EnviarDatos from "./components/EnviarDatos.vue";
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div>
     <h1>Suit:La ley de los audaces</h1>
   </div>
-
-  <EnviarDatos />
 </template>
 
 <style scoped>
