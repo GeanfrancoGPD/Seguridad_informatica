@@ -12,6 +12,9 @@ app.use(
 );
 
 // JSON
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 
+// Formularios grandes
+
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 export default app;

@@ -56,6 +56,16 @@ class DB {
       console.error("Error al inicializar la base de datos:", error);
     }
   }
+
+  async getDatos() {
+    try {
+      const res = await pool.query("SELECT * FROM clave");
+      return res.rows;
+    } catch (error) {
+      console.error("Error al obtener datos de la base de datos:", error);
+      return [];
+    }
+  }
 }
 
 export default new DB();
