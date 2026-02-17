@@ -22,7 +22,7 @@ onMounted(cargarPDFs);
 
 <template>
   <div class="tabla-container">
-    <h2>📑 Documentos almacenados</h2>
+    <h2>Documentos almacenados</h2>
 
     <table>
       <thead>
@@ -68,7 +68,7 @@ td {
 }
 
 th {
-  background-color: #ff0000;
+  background-color: #0033ff;
 }
 
 .hash {

@@ -4,7 +4,7 @@ import ListaPDFs from "./components/ListaPDFs.vue";
 
 <template>
   <div>
-    <h1>Suit:La ley de los audaces</h1>
+    <h1>Suits: Tribunales</h1>
     <ListaPDFs />
   </div>
 </template>
