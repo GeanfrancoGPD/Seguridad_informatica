@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  envios_db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: sistema_envios
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+    networks:
+      - red_db
+    expose:
+      - "5432"
+
+  ldap:
+    build:
+      context: ./ldap
+      dockerfile: dockerfile.dev
+    container_name: ldap-envios
+
+    volumes:
+      - ldap_data:/var/lib/ldap
+      - ldap_config:/etc/ldap/slapd.d
+    networks:
+      - red_ldap
+
+  mostrador:
+    build:
+      context: ./mostrador
+      dockerfile: Dockerfile.dev
+    tty: true
+    stdin_open: true
+    networks:
+      - red_apps
+      - red_ldap
+    depends_on:
+      - ldap
+
+networks:
+  red_apps:
+  red_db:
+  red_publica:
+  red_ldap:
+
+volumes:
+  ldap_data:
+  ldap_config:

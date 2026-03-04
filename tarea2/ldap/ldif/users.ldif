@@ -1,0 +1,21 @@
+dn: uid=Geanfranco,ou=employees,dc=envios,dc=local
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Geanfranco Piccioni
+sn: Piccioni
+uid: Geanfranco
+mail: geanfranco@envios.local
+userPassword: Mango123
+
+dn: uid=Andres,ou=employees,dc=envios,dc=local
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Andres Nava
+sn: Nava
+uid: Andres
+mail: andres@envios.local
+userPassword: Pera123

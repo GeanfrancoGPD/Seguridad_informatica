@@ -1,0 +1,19 @@
+FROM node:20
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+# Crear el grupo y el usuario de manera correcta para Debian/Ubuntu
+RUN groupadd appgroup && useradd -m -g appgroup appuser
+
+# Cambiar a un usuario no root
+USER appuser
+
+EXPOSE 3001
+
+CMD ["npm", "start"]
