@@ -16,16 +16,45 @@ services:
       - "5432"
 
   ldap:
-    build:
-      context: ./ldap
-      dockerfile: dockerfile.dev
+    image: osixia/openldap:1.5.0
     container_name: ldap-envios
-
+    hostname: ldap-envios
+    environment:
+      LDAP_ORGANISATION: "envios"
+      LDAP_DOMAIN: "envios.local"
     volumes:
+      - ./ldap/ldif:/container/service/slapd/assets/config/bootstrap/ldif
       - ldap_data:/var/lib/ldap
       - ldap_config:/etc/ldap/slapd.d
     networks:
       - red_ldap
+
+
+
+  proxy:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile.dev
+    ports:
+      - "80:80"
+    networks:
+      - red_publica
+      - red_apps
+    depends_on:
+      - servidor
+      - ldap
+
+  servidor:
+    build:
+      context: ./servidor/backend
+      dockerfile: Dockerfile.dev
+    networks:
+      - red_apps
+      - red_db
+      - red_ldap
+    depends_on:
+      - envios_db
+      - ldap
 
   mostrador:
     build:
@@ -34,7 +63,7 @@ services:
     tty: true
     stdin_open: true
     networks:
-      - red_apps
+      - red_publica
       - red_ldap
     depends_on:
       - ldap
