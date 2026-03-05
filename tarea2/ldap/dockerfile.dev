@@ -4,4 +4,4 @@ ENV LDAP_ORGANISATION="Envios"
 ENV LDAP_DOMAIN="envios.local"
 ENV LDAP_ADMIN_PASSWORD="Admin123"
 
-COPY ldif/ /container/service/slapd/assets/config/bootstrap/ldif/custom/    
+COPY ldif/ /container/service/slapd/assets/config/bootstrap/ldif/    
