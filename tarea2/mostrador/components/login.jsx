@@ -14,46 +14,67 @@ const Login = ({ onSuccess, onFail }) => {
   const handleSubmit = async () => {
     try {
       const client = ldap.createClient({
-        url: "ldap://ldap:389",
+        url: "ldap://ldap-envios",
+        reconnect: true,
       });
 
-      const userDN = `uid=${username},ou=employees,dc=envios,dc=local`;
+      console.log(username, password);
+
+      const userDN = `uid=${username.toLowerCase()},ou=employees,dc=envios,dc=local`;
 
       client.bind(userDN, password, (err) => {
         if (err) {
-          onFail();
+          console.log("Bind error:", err);
           setError("Usuario o contraseña incorrecta");
+          onFail();
           return;
         }
+
         console.log("Autenticación correcta");
 
+        const searchBase = "ou=roles,dc=envios,dc=local";
+
         const opts = {
-          filter: `(member=${userDN})`, // Busca grupos donde el usuario sea miembro
+          filter: "(objectClass=groupOfNames)",
           scope: "sub",
-          attributes: ["cn"], // Solo queremos el nombre del grupo
+          attributes: ["cn"],
         };
 
-        client.search("ou=roles,dc=envios,dc=local", opts, (err, res) => {
-          if (err) {
-            console.error("Error en la búsqueda:", err);
-            return;
-          }
+        console.log("Buscando roles para:", userDN);
 
-          res.on("searchEntry", (entry) => {
-            console.log("Rol del usuario:", entry.object.cn);
-            // Por ejemplo: "Mostrador" o "Despacho"
-          });
+        // client.search(searchBase, opts, (err, res) => {
+        //   if (err) {
+        //     console.error("Error iniciando búsqueda:", err);
+        //     client.unbind();
+        //     return;
+        //   }
 
-          res.on("end", (result) => {
-            console.log("Búsqueda de roles finalizada");
-            client.unbind();
-          });
+        //   res.on("searchEntry", (entry) => {
+        //     console.log("Grupo encontrado:", entry.object);
+        //     roles.push(entry.object.cn);
+        //   });
 
-          res.on("error", (err) => {
-            console.error("Error durante la búsqueda:", err);
-          });
+        //   res.on("error", (err) => {
+        //     console.error("Error durante la búsqueda:", err);
+        //   });
+
+        //   res.on("end", (result) => {
+        //     console.log("Búsqueda finalizada:", result.status);
+        //     console.log("Roles:", roles);
+
+        //     onSuccess({
+        //       username,
+        //       groups: roles,
+        //     });
+
+        //     client.unbind();
+        //   });
+        // });
+
+        onSuccess({
+          username,
+          rol: "Mostrador",
         });
-        onSuccess({ username, rol: "Mostrador" });
       });
     } catch (err) {
       setError("Error al conectar con el servidor LDAP: " + err.message);
@@ -98,7 +119,7 @@ const Login = ({ onSuccess, onFail }) => {
         />
       </Box>
 
-      {error && <Text color="red">{error} + "presione R para reintentar"</Text>}
+      {error && <Text color="red">{error} presione R para reintentar</Text>}
     </Box>
   );
 };

@@ -20,7 +20,7 @@ services:
       context: ./ldap
       dockerfile: dockerfile.dev
     container_name: ldap-envios
-    hostname: ldap-envios
+    restart: unless-stopped
     environment:
       LDAP_ORGANISATION: "envios"
       LDAP_DOMAIN: "envios.local"
@@ -31,14 +31,13 @@ services:
     networks:
       - red_ldap
 
-
-
   proxy:
     build:
       context: ./proxy
       dockerfile: Dockerfile.dev
     ports:
       - "80:80"
+      - "443:443"
     networks:
       - red_publica
       - red_apps

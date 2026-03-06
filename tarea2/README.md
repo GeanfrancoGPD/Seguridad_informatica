@@ -158,3 +158,25 @@ objectClass: top
 objectClass: organizationalUnit
 ou: roles
 ```
+
+## Certificados ssl
+
+Para generar los certificados ssl, se puede usar el siguiente comando:
+
+```js
+openssl req -x509 -nodes -days 365 \
+-newkey rsa:2048 \
+-keyout server.key \
+-out server.crt
+```
+
+Pidendo información como el país, estado, localidad, organización(ejemplo de la organización
+: empleados.local), unidad organizativa, nombre común y correo electrónico. Se pueden dejar en blanco o poner cualquier valor.
+
+Luego, se deben copiar los archivos server.key y server.crt al directorio proxy/certs/ para que el proxy pueda usarlos.
+
+Tambien se puede usar este comando para generar un certificado autofirmado:
+
+```js
+docker run --rm -v ${PWD}:/certs alpine sh -c "apk add --no-cache openssl && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /certs/server.key -out /certs/server.crt -subj '/C=ES/ST=LaRioja/L=Logrono/O=EmpresaEnvios/CN=empleados.local'"
+```

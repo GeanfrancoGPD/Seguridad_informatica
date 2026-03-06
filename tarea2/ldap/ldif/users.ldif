@@ -1,21 +1,21 @@
-dn: uid=Geanfranco,ou=employees,dc=envios,dc=local
+dn: uid=geanfranco,ou=employees,dc=envios,dc=local
 objectClass: top
 objectClass: person
 objectClass: organizationalPerson
 objectClass: inetOrgPerson
 cn: Geanfranco Piccioni
 sn: Piccioni
-uid: Geanfranco
+uid: geanfranco
 mail: geanfranco@envios.local
-userPassword: Mango123
+userPassword: {SSHA}DVhjGZnotAyNKp8Jq6mWapVCz3TLhbXF
 
-dn: uid=Andres,ou=employees,dc=envios,dc=local
+dn: uid=andres,ou=employees,dc=envios,dc=local
 objectClass: top
 objectClass: person
 objectClass: organizationalPerson
 objectClass: inetOrgPerson
 cn: Andres Nava
 sn: Nava
-uid: Andres
+uid: andres
 mail: andres@envios.local
-userPassword: Pera123
+userPassword: {SSHA}He+X/Gmpuuj5iGPFE/yp4yvpIn14C+xa

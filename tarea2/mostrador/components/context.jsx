@@ -183,6 +183,8 @@ export function ContentPaneTwo() {
   const [nameClient, setNameClient] = useState("");
   const [fecha, setFecha] = useState("");
   const [peso, setPeso] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Obtener fecha actual al cargar
@@ -191,6 +193,50 @@ export function ContentPaneTwo() {
     const fechaFormateada = hoy.toLocaleDateString("es-ES");
     setFecha(fechaFormateada);
   }, []);
+
+  const handleSubmit = async (data) => {
+    setLoading(true);
+    setMensaje("");
+
+    try {
+      const resultado = { ...data, fecha: fecha };
+      console.log("Enviando registro al servidor:", resultado);
+
+      // Enviar petición al proxy en /api/registrar-producto
+      const response = await fetch("http://localhost/api/registrar-producto", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          producto: data.producto,
+          cliente: data.cliente,
+          peso: data.peso,
+          fecha: fecha,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+      }
+
+      const resultado_api = await response.json();
+      setMensaje(
+        `✓ Producto registrado exitosamente: ${resultado_api.data.id}`,
+      );
+      console.log("Respuesta del servidor:", resultado_api);
+
+      // Limpiar el formulario después de 2 segundos
+      setTimeout(() => {
+        setMensaje("");
+      }, 3000);
+    } catch (error) {
+      console.error("Error al registrar produto:", error);
+      setMensaje(`✗ Error al registrar: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Box
@@ -205,16 +251,23 @@ export function ContentPaneTwo() {
         <BigText text="Registro" />
       </Gradient>
       <Text>Registro de paquetes</Text>
+      {mensaje && (
+        <Text
+          color={mensaje.startsWith("✓") ? "green" : "red"}
+          bold
+          marginBottom={1}
+        >
+          {mensaje}
+        </Text>
+      )}
+      {loading && <Text color="yellow">Enviando datos...</Text>}
       <Form
         fields={[
           { name: "producto", label: "Nombre del producto" },
           { name: "cliente", label: "Nombre del cliente" },
           { name: "peso", label: "Peso (kg)" },
         ]}
-        onSubmit={(data) => {
-          const resultado = { ...data, fecha: fecha };
-          console.log("Registro completo:", resultado);
-        }}
+        onSubmit={handleSubmit}
       />
     </Box>
   );
