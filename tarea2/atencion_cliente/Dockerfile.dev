@@ -8,6 +8,23 @@ RUN npm install
 
 COPY . .
 
+RUN groupadd appgroup && useradd -m -g appgroup appuser
+
+USER appuser
+
+EXPOSE 3003
+
+CMD ["npm", "start"]
+FROM node:20
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 # El appuser es el usuario normal no root 
 USER appuser 

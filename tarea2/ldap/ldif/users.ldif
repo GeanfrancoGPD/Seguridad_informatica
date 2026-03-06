@@ -7,7 +7,7 @@ cn: Geanfranco Piccioni
 sn: Piccioni
 uid: geanfranco
 mail: geanfranco@envios.local
-userPassword: {SSHA}DVhjGZnotAyNKp8Jq6mWapVCz3TLhbXF
+userPassword: {SSHA}sooJFHZXK05dWV65JPpzRgn/Gd28zecM
 
 dn: uid=andres,ou=employees,dc=envios,dc=local
 objectClass: top
@@ -18,4 +18,4 @@ cn: Andres Nava
 sn: Nava
 uid: andres
 mail: andres@envios.local
-userPassword: {SSHA}He+X/Gmpuuj5iGPFE/yp4yvpIn14C+xa
+userPassword: {SSHA}6DI4i5H13CZe5O92FWxBIrW1wecVt6H7

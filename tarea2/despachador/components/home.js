@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { Box, Text, useInput } from "ink";
-import axios from "axios";
 import {
   MainLayout,
   SideBar,
   Content,
   ContentPaneOne,
   ContentPaneTwo,
-} from "./context";
+} from "./context.js";
 
 let sideBarPron = {
   navItem: [
@@ -15,9 +14,6 @@ let sideBarPron = {
     { label: "Registrar", value: "pane_two" },
     { label: "Exit", value: "exit" },
   ],
-  OnSelect: (value) => {
-    console.log("Selected value:", value);
-  },
 };
 
 const Home = ({ user }) => {
@@ -30,13 +26,9 @@ const Home = ({ user }) => {
     }
   });
 
-  if (!user) {
-    return <Text>Cargando usuario...</Text>; // o null
-  }
+  if (!user) return <Text>Cargando usuario...</Text>;
 
-  const navegar = (item) => {
-    setSelectedPanel(item.value);
-  };
+  const navegar = (item) => setSelectedPanel(item.value);
 
   let PanelContent;
   if (selectedPanel === "pane_one")
@@ -44,16 +36,16 @@ const Home = ({ user }) => {
   else if (selectedPanel === "pane_two") PanelContent = <ContentPaneTwo />;
   else PanelContent = <Text>Saliendo...</Text>;
 
-  if (user.rol.includes("Mostrador")) {
+  if (user.rol === "Despachador") {
     return (
       <MainLayout>
         <SideBar {...sideBarPron} onSelect={navegar} focus={focus} />
         {PanelContent}
       </MainLayout>
     );
-  } else {
-    return <Text>Acceso no autorizado para el rol: {user.rol}</Text>;
   }
+
+  return <Text>Acceso no autorizado para el rol: {user.rol}</Text>;
 };
 
 export default Home;

@@ -1,9 +1,8 @@
+
 dn: ou=employees,dc=envios,dc=local
-objectClass: top
 objectClass: organizationalUnit
 ou: employees
 
 dn: ou=roles,dc=envios,dc=local
-objectClass: top
 objectClass: organizationalUnit
 ou: roles

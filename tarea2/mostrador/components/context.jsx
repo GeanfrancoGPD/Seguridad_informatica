@@ -64,16 +64,31 @@ export function ContentPaneOne({ isFocused }) {
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState(0);
   const [mode, setMode] = useState("nav");
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    // Obtener productos desde backend via proxy
+    const fetchProductos = async () => {
+      try {
+        const res = await fetch("http://proxy/app/productos");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error("No se pudo cargar productos:", err);
+      }
+    };
+    fetchProductos();
+  }, []);
 
   const PAGE_SIZE = 10;
-  const TOTAL = 100;
-  const data = Array.from({ length: TOTAL }, (_, i) => ({
-    id: i + 1,
-    nombre: `Producto ${i + 1}`,
-    precio: `$${(i + 1) * 3}`,
-    estado: i % 5 === 0 ? "true" : "false",
-    fecha: `2024-09-${(i % 30) + 1}`,
-    Nombre_cliente: `Cliente ${i + 1}`,
+  const data = products.map((p) => ({
+    id: p.id,
+    nombre: p.nombre,
+    precio: p.valor ? `$${p.valor}` : "",
+    estado: p.estado_nombre || "",
+    fecha: p.fecha_registro || "",
+    Nombre_cliente: p.cliente_nombre || "",
   }));
 
   const filtered = useMemo(() => {
@@ -211,8 +226,11 @@ export function ContentPaneTwo() {
         },
         body: JSON.stringify({
           producto: data.producto,
-          cliente: data.cliente,
+          descripcion: data.descripcion || null,
+          sku: data.sku || null,
           peso: data.peso,
+          valor: data.valor ? Number(data.valor) : 0,
+          cliente: data.cliente,
           fecha: fecha,
         }),
       });
@@ -264,7 +282,10 @@ export function ContentPaneTwo() {
         fields={[
           { name: "producto", label: "Nombre del producto" },
           { name: "cliente", label: "Nombre del cliente" },
+          { name: "descripcion", label: "Descripción" },
+          { name: "sku", label: "SKU (opcional)" },
           { name: "peso", label: "Peso (kg)" },
+          { name: "valor", label: "Valor (USD)" },
         ]}
         onSubmit={handleSubmit}
       />

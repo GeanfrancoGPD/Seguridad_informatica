@@ -2,11 +2,11 @@ dn: cn=Administradores,ou=roles,dc=envios,dc=local
 objectClass: top
 objectClass: groupOfNames
 cn: Administradores
-member: uid=Geanfranco,ou=employees,dc=envios,dc=local
+member: uid=geanfranco,ou=employees,dc=envios,dc=local
 
-dn: cn=Empleados,ou=roles,dc=envios,dc=local
+dn: cn=Mostrador,ou=roles,dc=envios,dc=local
 objectClass: top
 objectClass: groupOfNames
-cn: Empleados
-member: uid=Geanfranco,ou=employees,dc=envios,dc=local
-member: uid=Andres,ou=employees,dc=envios,dc=local
+cn: Mostrador
+member: uid=geanfranco,ou=employees,dc=envios,dc=local
+member: uid=andres,ou=employees,dc=envios,dc=local

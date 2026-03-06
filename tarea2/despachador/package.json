@@ -1,0 +1,22 @@
+{
+  "name": "despachador",
+  "version": "1.0.0",
+  "main": "server.jsx",
+  "type": "module",
+  "scripts": {
+    "start": "tsx server.jsx"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "ink": "^6.8.0",
+    "ink-big-text": "^2.0.0",
+    "ink-gradient": "^4.0.0",
+    "ink-select-input": "^6.2.0",
+    "ink-text-input": "^6.0.0",
+    "ldapjs": "^3.0.7",
+    "react": "^19.2.4"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
+}

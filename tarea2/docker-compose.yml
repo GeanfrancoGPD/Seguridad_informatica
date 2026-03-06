@@ -65,10 +65,32 @@ services:
     tty: true
     stdin_open: true
     networks:
-      - red_publica
+      - red_apps
       - red_ldap
     depends_on:
       - ldap
+
+  despachador:
+  build:
+    context: ./despachador
+    dockerfile: Dockerfile.dev
+    tty: true
+    stdin_open: true
+    networks:
+      - red_apps
+      - red_ldap
+    depends_on:
+      - ldap
+
+  atencion_cliente:
+    build:
+      context: ./atencion_cliente
+      dockerfile: Dockerfile.dev
+    tty: true
+    stdin_open: true
+    networks:
+      - red_apps
+      - red_ldap
 
 networks:
   red_publica:

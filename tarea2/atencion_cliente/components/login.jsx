@@ -73,7 +73,7 @@ const Login = ({ onSuccess, onFail }) => {
 
         onSuccess({
           username,
-          rol: "Mostrador",
+          rol: "Atencion_cliente",
         });
       });
     } catch (err) {

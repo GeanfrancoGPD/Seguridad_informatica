@@ -180,3 +180,10 @@ Tambien se puede usar este comando para generar un certificado autofirmado:
 ```js
 docker run --rm -v ${PWD}:/certs alpine sh -c "apk add --no-cache openssl && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /certs/server.key -out /certs/server.crt -subj '/C=ES/ST=LaRioja/L=Logrono/O=EmpresaEnvios/CN=empleados.local'"
 ```
+
+## Para hashear las contraseñas
+
+```js
+docker exec -it ldap-envios slappasswd -s Mango123
+docker exec -it ldap-envios slappasswd -s Pera123
+```
