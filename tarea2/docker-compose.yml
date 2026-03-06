@@ -71,7 +71,6 @@ services:
       - ldap
 
   despachador:
-  build:
     build:
       context: ./despachador
       dockerfile: Dockerfile.dev
