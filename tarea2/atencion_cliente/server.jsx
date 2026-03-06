@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import React from "react";
 import { render } from "ink";
-import Login from "./components/login.js";
-import Home from "./components/home.js";
+import Login from "./components/login.jsx";
+import Home from "./components/home.jsx";
 
 dotenv.config();
 

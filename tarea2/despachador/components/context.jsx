@@ -3,9 +3,9 @@ import { Box, Text, useInput } from "ink";
 import SelectInput from "ink-select-input";
 import Gradient from "ink-gradient";
 import BigText from "ink-big-text";
-import { ProTable } from "./table.js";
+import { ProTable } from "./table.jsx";
 import TextInput from "ink-text-input";
-import { Form } from "./Form.js";
+import { Form } from "./Form.jsx";
 
 export function MainLayout({ children }) {
   return <Box>{children}</Box>;

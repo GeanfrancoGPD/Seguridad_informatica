@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Box, Text, useInput } from "ink";
 import TextInput from "ink-text-input";
-import axios from "axios";
 import BigText from "ink-big-text";
 import ldap from "ldapjs";
 
