@@ -3,10 +3,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const pool = new Pool({
-  user: process.env.POSTGRES_USER,
-  host: "envios_db",
-  database: process.env.POSTGRES_DB,
-  password: process.env.POSTGRES_PASSWORD,
+  user: process.env.POSTGRES_USER || "enviosAdmin",
+  host: process.env.POSTGRES_HOST || "envios_db",
+  database: process.env.POSTGRES_DB || "sistema_envios",
+  password: process.env.POSTGRES_PASSWORD || "express123",
   port: 5432,
 });
 
@@ -19,15 +19,13 @@ export async function appRegisterProducto(req, res) {
         .json({ error: "Faltan campos obligatorios: producto, cliente, peso" });
     }
     const query =
-      "INSERT INTO productos (nombre, cliente, peso, fecha) VALUES ($1, $2, $3, $4) RETURNING *";
+      "INSERT INTO producto (nombre, cliente, peso, fecha) VALUES ($1, $2, $3, $4) RETURNING *";
     const values = [producto, cliente, peso, fecha || new Date()];
     const result = await pool.query(query, values);
-    res
-      .status(201)
-      .json({
-        message: "Producto registrado exitosamente",
-        data: result.rows[0],
-      });
+    res.status(201).json({
+      message: "Producto registrado exitosamente",
+      data: result.rows[0],
+    });
   } catch (err) {
     console.error("Error al registrar producto:", err);
     res
@@ -38,7 +36,7 @@ export async function appRegisterProducto(req, res) {
 
 export async function appGetProductos(req, res) {
   try {
-    const result = await pool.query("SELECT * FROM productos");
+    const result = await pool.query("SELECT * FROM producto");
     res.json(result.rows);
   } catch (err) {
     console.error("Error al obtener productos:", err);

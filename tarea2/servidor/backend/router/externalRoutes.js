@@ -10,6 +10,9 @@ import {
 router.get("/", (req, res) =>
   res.json({ message: "API pública - Acceso desde internet" }),
 );
+router.get("/saludar", (req, res) =>
+  res.json({ mensaje: "¡Hola desde el servidor Express!" }),
+);
 router.post("/registrar-producto", apiRegisterProducto);
 router.get("/productos", apiGetProductos);
 router.post("/login", apiLogin);

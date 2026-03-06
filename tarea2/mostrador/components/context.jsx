@@ -203,7 +203,8 @@ export function ContentPaneTwo() {
       console.log("Enviando registro al servidor:", resultado);
 
       // Enviar petición al proxy en /api/registrar-producto
-      const response = await fetch("http://localhost/api/registrar-producto", {
+      // Usar "proxy" (nombre del servicio en Docker) en vez de localhost
+      const response = await fetch("http://proxy/app/registrar-producto", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -221,9 +222,7 @@ export function ContentPaneTwo() {
       }
 
       const resultado_api = await response.json();
-      setMensaje(
-        `✓ Producto registrado exitosamente: ${resultado_api.data.id}`,
-      );
+      setMensaje(`Producto registrado exitosamente: ${resultado_api.data.id}`);
       console.log("Respuesta del servidor:", resultado_api);
 
       // Limpiar el formulario después de 2 segundos
@@ -232,7 +231,7 @@ export function ContentPaneTwo() {
       }, 3000);
     } catch (error) {
       console.error("Error al registrar produto:", error);
-      setMensaje(`✗ Error al registrar: ${error.message}`);
+      setMensaje(`Error al registrar: ${error.message}`);
     } finally {
       setLoading(false);
     }

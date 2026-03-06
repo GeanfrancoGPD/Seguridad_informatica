@@ -5,11 +5,12 @@ services:
     image: postgres:17
     restart: always
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: enviosAdmin
+      POSTGRES_PASSWORD: express123
       POSTGRES_DB: sistema_envios
     volumes:
       - ./db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - red_db
     expose:
@@ -70,10 +71,14 @@ services:
       - ldap
 
 networks:
-  red_apps:
-  red_db:
   red_publica:
+    driver: bridge
+  red_apps:
+    driver: bridge
+  red_db:
+    driver: bridge
   red_ldap:
+    driver: bridge
 
 volumes:
   ldap_data:

@@ -17,7 +17,8 @@ const App = () => {
 
   const saludar = async () => {
     try {
-      const peticion = await fetch("http://localhost:5000/saludar");
+      // Usar proxy (nombre del servicio) en vez de localhost:5000
+      const peticion = await fetch("http://proxy/api/saludar");
       const data = await peticion.json();
       setMensaje(data.mensaje);
     } catch (error) {

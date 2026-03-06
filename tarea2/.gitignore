@@ -3,5 +3,6 @@ mostrador/node_modules/
 despachador/node_modules/
 atencion_cliente/node_modules/
 servidor/backend/node_modules/
+servidor/backend/.env
 db_data/
 ldap_data/
