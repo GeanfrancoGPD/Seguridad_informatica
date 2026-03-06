@@ -72,8 +72,9 @@ services:
 
   despachador:
   build:
-    context: ./despachador
-    dockerfile: Dockerfile.dev
+    build:
+      context: ./despachador
+      dockerfile: Dockerfile.dev
     tty: true
     stdin_open: true
     networks:
