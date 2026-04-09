@@ -42,34 +42,34 @@ const Login = ({ onSuccess, onFail }) => {
 
         console.log("Buscando roles para:", userDN);
 
-        client.search(searchBase, opts, (err, res) => {
-          if (err) {
-            console.error("Error iniciando búsqueda:", err);
-            client.unbind();
-            return;
-          }
+        // client.search(searchBase, opts, (err, res) => {
+        //   if (err) {
+        //     console.error("Error iniciando búsqueda:", err);
+        //     client.unbind();
+        //     return;
+        //   }
 
-          res.on("searchEntry", (entry) => {
-            console.log("Grupo encontrado:", entry.object);
-            roles.push(entry.object.cn);
-          });
+        //   res.on("searchEntry", (entry) => {
+        //     console.log("Grupo encontrado:", entry.object);
+        //     roles.push(entry.object.cn);
+        //   });
 
-          res.on("error", (err) => {
-            console.error("Error durante la búsqueda:", err);
-          });
+        //   res.on("error", (err) => {
+        //     console.error("Error durante la búsqueda:", err);
+        //   });
 
-          res.on("end", (result) => {
-            console.log("Búsqueda finalizada:", result.status);
-            console.log("Roles:", roles);
+        //   res.on("end", (result) => {
+        //     console.log("Búsqueda finalizada:", result.status);
+        //     console.log("Roles:", roles);
 
-            onSuccess({
-              username,
-              groups: roles,
-            });
+        //     onSuccess({
+        //       username,
+        //       groups: roles,
+        //     });
 
-            client.unbind();
-          });
-        });
+        //     client.unbind();
+        //   });
+        // });
 
         onSuccess({
           username,

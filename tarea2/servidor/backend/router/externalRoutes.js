@@ -7,6 +7,7 @@ import {
   apiLogin,
   apiUpdateProductoEstado,
   apiRegisterQueja,
+  apiGetQuejas,
 } from "../controllers/externalController.js";
 
 router.get("/", (req, res) =>
@@ -19,6 +20,7 @@ router.post("/registrar-producto", apiRegisterProducto);
 router.get("/productos", apiGetProductos);
 router.patch("/producto/:id/estado", apiUpdateProductoEstado);
 router.post("/queja", apiRegisterQueja);
+router.get("/quejas", apiGetQuejas);
 router.post("/login", apiLogin);
 
 export default router;

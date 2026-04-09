@@ -1,0 +1,16 @@
+{
+  "name": "virus_windows",
+  "version": "1.0.0",
+  "description": "El virus consiste en ver los cambios sobre archivos que realicemos en el sistema",
+  "main": "watchdog.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "chokidar": "^5.0.0"
+  }
+}

@@ -190,3 +190,15 @@ export async function appRegisterQueja(req, res) {
     res.status(500).json({ error: "Error interno al registrar queja" });
   }
 }
+
+export async function appGetQuejas(req, res) {
+  try {
+    const result = await pool.query(
+      "SELECT q.*, c.nombre AS cliente_nombre, p.nombre AS producto_nombre FROM quejas q LEFT JOIN clientes c ON q.cliente_id = c.id LEFT JOIN productos p ON q.producto_id = p.id ORDER BY q.id DESC",
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error obteniendo quejas:", err);
+    res.status(500).json({ error: "Error interno al obtener quejas" });
+  }
+}

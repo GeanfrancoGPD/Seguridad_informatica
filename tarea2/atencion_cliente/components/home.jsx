@@ -6,13 +6,12 @@ import {
   Content,
   ContentPaneOne,
   ContentPaneTwo,
-} from "./context.js";
+} from "./context.jsx";
 
 let sideBarPron = {
   navItem: [
-    { label: "Lista Quejas", value: "pane_one" },
+    { label: "Ver quejas", value: "pane_one" },
     { label: "Registrar Queja", value: "pane_two" },
-    { label: "Exit", value: "exit" },
   ],
 };
 
@@ -35,7 +34,7 @@ const Home = ({ user }) => {
   else if (selectedPanel === "pane_two") PanelContent = <ContentPaneTwo />;
   else PanelContent = <Text>Saliendo...</Text>;
 
-  if (user.rol === "Atencion") {
+  if (user.rol === "Atencion_cliente") {
     return (
       <MainLayout>
         <SideBar {...sideBarPron} onSelect={navegar} focus={focus} />
