@@ -9,7 +9,7 @@ import fs from "fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-let imagenRuta = join(__dirname, "image.png");
+let imagenRuta = join(__dirname, "./asset/image.png");
 
 function enviarNotificacionSpam() {
   notify.notify(
@@ -32,39 +32,26 @@ setInterval(enviarNotificacionSpam, 5000);
 
 console.log("Simulador de spam iniciado...");
 
-async function estaCorriendo(nombre) {
-  const procesos = await psList();
-  return procesos.some((p) =>
-    p.name.toLowerCase().includes(nombre.toLowerCase()),
-  );
-}
+// async function estaCorriendo(nombre) {
+//   const procesos = await psList();
+//   return procesos.some((p) =>
+//     p.name.toLowerCase().includes(nombre.toLowerCase()),
+//   );
+// }
 
-async function verificarYLevantar() {
-  const activo = await estaCorriendo("watchdog");
+// async function verificarYLevantar() {
+//   const activo = await estaCorriendo("watchdog");
 
-  if (!activo) {
-    console.log("[RECOVERY] Proceso watchdog no encontrado. Iniciando...");
+//   if (!activo) {
+//     console.log("[RECOVERY] Proceso watchdog no encontrado. Iniciando...");
 
-    spawn("node", ["watchdog.js"], {
-      detached: true,
-      stdio: "ignore",
-    }).unref();
-  } else {
-    console.log("[OK] Proceso watchdog activo");
-  }
-}
+//     spawn("node", ["watchdog.js"], {
+//       detached: true,
+//       stdio: "ignore",
+//     }).unref();
+//   } else {
+//     console.log("[OK] Proceso watchdog activo");
+//   }
+// }
 
-setInterval(verificarYLevantar, 5000);
-
-function debeDetenerse() {
-  return fs.existsSync("stop.txt");
-}
-
-setInterval(async () => {
-  if (debeDetenerse()) {
-    console.log("[STOP] Watchdog detenido por señal externa.");
-    process.exit(0);
-  }
-
-  await verificarYLevantar();
-}, 5000);
+// setInterval(verificarYLevantar, 5000);

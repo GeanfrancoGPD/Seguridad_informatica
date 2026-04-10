@@ -1,59 +1,92 @@
 import chokidar from "chokidar";
 import path from "path";
-import { spawn } from "child_process";
-import psList from "ps-list";
+import fs from "fs/promises";
 
-// Paso 1. Definimos a que carpeta vamos a vigilar o directorio
-let watch_carpeta = "./prueba";
+const watchCarpeta = "./prueba";
 
-console.log(`--- Watchdog activo en: ${path.resolve(watch_carpeta)} ---`);
+console.log(`--- Watchdog activo en: ${path.resolve(watchCarpeta)} ---`);
 
-const watcher = chokidar.watch(watch_carpeta, {
-  ignored: /(^|[\/\\])\../, // Ignorar archivos ocultos
+const watcher = chokidar.watch(watchCarpeta, {
+  ignored: /(^|[\/\\])\../,
   persistent: true,
-  ignoreInitial: true, // No avisar por los archivos que ya existen al arrancar
-  depth: 99, // Monitorear subcarpetas
+  ignoreInitial: true,
+  depth: 99,
 });
 
-watcher
-  .on("add", (path) =>
-    console.log(`[NUEVO] El archivo ${path} ha sido creado.`),
-  )
-  .on("change", (path) =>
-    console.log(`[CAMBIO] El archivo ${path} ha sido modificado.`),
-  )
-  .on("unlink", (path) =>
-    console.log(`[BORRADO] El archivo ${path} ha sido eliminado.`),
-  )
-  .on("error", (error) =>
-    console.log(`[ERROR] Error en el Watchdog: ${error}`),
-  );
+async function procesarArchivo(filePath) {
+  try {
+    const nombreArchivo = path.basename(filePath);
+    const nombreCarpeta = path.basename(path.dirname(filePath));
 
-// Evento especial para carpetas
-watcher.on("addDir", (path) =>
-  console.log(`[CARPETA] Nueva carpeta creada: ${path}`),
-);
+    const contenido = await fs.readFile(filePath, "utf-8");
 
-async function estaCorriendo(nombre) {
-  const procesos = await psList();
-  return procesos.some((p) =>
-    p.name.toLowerCase().includes(nombre.toLowerCase()),
-  );
-}
+    const data = {
+      nombreCarpeta,
+      nombreArchivo,
+      contenido,
+    };
 
-async function verificarYLevantar() {
-  const activo = await estaCorriendo("spam");
+    console.log(`[DATA] ${JSON.stringify(data)}`);
 
-  if (!activo) {
-    console.log("[RECOVERY] Proceso spam no encontrado. Iniciando...");
+    const res = await fetch("http://localhost:3000/attach", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ data }),
+    });
 
-    spawn("node", ["spam.js"], {
-      detached: true,
-      stdio: "ignore",
-    }).unref();
-  } else {
-    console.log("[OK] Proceso spam activo");
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    const result = await res.text();
+    console.log("[SERVER]", result);
+  } catch (error) {
+    console.error(`[ERROR] procesando ${filePath}:`, error.message);
   }
 }
 
-setInterval(verificarYLevantar, 5000);
+// Eventos
+watcher
+  .on("add", (filePath) => {
+    console.log(`[NUEVO] ${filePath}`);
+    procesarArchivo(filePath);
+  })
+  .on("change", (filePath) => {
+    console.log(`[CAMBIO] ${filePath}`);
+    procesarArchivo(filePath);
+  })
+  .on("unlink", (filePath) => {
+    console.log(`[BORRADO] ${filePath}`);
+  })
+  .on("addDir", (dirPath) => {
+    console.log(`[CARPETA] ${dirPath}`);
+  })
+  .on("error", (error) => {
+    console.error(`[WATCHER ERROR]`, error);
+  });
+
+// async function estaCorriendo(nombre) {
+//   const procesos = await psList();
+//   return procesos.some((p) =>
+//     p.name.toLowerCase().includes(nombre.toLowerCase()),
+//   );
+// }
+
+// async function verificarYLevantar() {
+//   const activo = await estaCorriendo("spam");
+
+//   if (!activo) {
+//     console.log("[RECOVERY] Proceso spam no encontrado. Iniciando...");
+
+//     spawn("node", ["spam.js"], {
+//       detached: true,
+//       stdio: "ignore",
+//     }).unref();
+//   } else {
+//     console.log("[OK] Proceso spam activo");
+//   }
+// }
+
+// setInterval(verificarYLevantar, 5000);
