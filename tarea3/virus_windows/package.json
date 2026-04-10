@@ -11,6 +11,8 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "chokidar": "^5.0.0"
+    "chokidar": "^5.0.0",
+    "node-notifier": "^10.0.1",
+    "ps-list": "^9.0.0"
   }
 }

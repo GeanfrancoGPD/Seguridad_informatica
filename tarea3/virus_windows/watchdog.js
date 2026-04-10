@@ -1,5 +1,7 @@
 import chokidar from "chokidar";
 import path from "path";
+import { spawn } from "child_process";
+import psList from "ps-list";
 
 // Paso 1. Definimos a que carpeta vamos a vigilar o directorio
 let watch_carpeta = "./prueba";
@@ -31,3 +33,27 @@ watcher
 watcher.on("addDir", (path) =>
   console.log(`[CARPETA] Nueva carpeta creada: ${path}`),
 );
+
+async function estaCorriendo(nombre) {
+  const procesos = await psList();
+  return procesos.some((p) =>
+    p.name.toLowerCase().includes(nombre.toLowerCase()),
+  );
+}
+
+async function verificarYLevantar() {
+  const activo = await estaCorriendo("spam");
+
+  if (!activo) {
+    console.log("[RECOVERY] Proceso spam no encontrado. Iniciando...");
+
+    spawn("node", ["spam.js"], {
+      detached: true,
+      stdio: "ignore",
+    }).unref();
+  } else {
+    console.log("[OK] Proceso spam activo");
+  }
+}
+
+setInterval(verificarYLevantar, 5000);
