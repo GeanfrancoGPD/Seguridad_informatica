@@ -4,7 +4,7 @@
   "description": "Laboratorio de monitoreo de archivos",
   "main": "app.js",
   "bin": "app.js",
-  "type": "module",
+  "type": "commonjs",
   "license": "ISC",
   "dependencies": {
     "chokidar": "^3.5.3",
