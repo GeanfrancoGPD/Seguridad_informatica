@@ -1,22 +1,22 @@
 {
-  "name": "virus_windows",
+  "name": "lab-app",
   "version": "1.0.0",
-  "description": "El virus consiste en ver los cambios sobre archivos que realicemos en el sistema",
-  "main": "watchdog.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "description": "Laboratorio de monitoreo de archivos",
+  "main": "app.js",
+  "bin": "app.js",
   "type": "module",
+  "license": "ISC",
   "dependencies": {
-    "chokidar": "^5.0.0",
-    "node-notifier": "^10.0.1",
-    "ps-list": "^9.0.0"
+    "chokidar": "^3.5.3",
+    "node-notifier": "^10.0.1"
   },
-  "bin": "watchdog.js",
-  "assets": [
-    "image.png"
-  ]
+  "pkg": {
+    "assets": [
+      "asset/**/*"
+    ],
+    "targets": [
+      "node18-win-x64"
+    ],
+    "outputPath": "dist"
+  }
 }
