@@ -26,11 +26,12 @@ let carpetaWatch = obtenerCarpetaDescargas();
 const MAX_SIZE = 1024 * 1024 * 2; // 2MB
 
 function notificar(titulo, mensaje) {
-  const cmd = `
-powershell -Command "New-BurntToastNotification -Text '${titulo}','${mensaje}'"
-  `;
+  const cmd = `powershell -NoProfile -ExecutionPolicy Bypass -Command "Import-Module BurntToast; New-BurntToastNotification -Text '${titulo}','${mensaje}'"`;
 
-  exec(cmd);
+  exec(cmd, (err, stdout, stderr) => {
+    if (err) console.error("ERROR:", err.message);
+    if (stderr) console.error("STDERR:", stderr);
+  });
 }
 
 // UTILIDADES PID
