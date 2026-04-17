@@ -5,6 +5,12 @@ import path from "path";
 import { spawn } from "child_process";
 import os from "os";
 
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 // PATHS BASE
 // const usuario = os.userInfo().username;
 
